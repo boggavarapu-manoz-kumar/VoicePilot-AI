@@ -45,22 +45,35 @@ For detailed architectural specifications and directory responsibilities, see:
 ### Prerequisites
 - Node.js (v20+ recommended, detected v22.17.1) and npm
 - Java 21 LTS
-- Docker & Docker Compose (or standalone MySQL 8 server)
+- MySQL 8.x (native Windows service `MySQL80` or Docker Compose)
 
-### 1. Database (Local Container)
-When Docker is running on your machine:
+### 1. Database Provisioning & Flyway Migrations
+See [Database Operations & Setup Guide](docs/development/DATABASE_SETUP.md) for full instructions.
+
+#### Option A: Native MySQL 8 (Recommended if MySQL service is running)
+Create the database and user using the MySQL client:
+```sql
+CREATE DATABASE IF NOT EXISTS voicepilot CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS 'voicepilot_user'@'localhost' IDENTIFIED BY 'voicepilot_pass';
+GRANT ALL PRIVILEGES ON voicepilot.* TO 'voicepilot_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+#### Option B: Docker Compose
 ```bash
 docker compose -f infrastructure/database/docker-compose.yml up -d
 ```
 
-### 2. Backend Service
+### 2. Run Backend
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
-Once started, interactive API documentation is available at `http://localhost:8080/api/v1/swagger-ui.html`.
+Flyway automatically applies baseline migrations (`V1__init_system_baseline.sql`) and Hibernate validates the schema.
+- Interactive API docs: `http://localhost:8080/api/v1/swagger-ui.html`
+- Health telemetry: `http://localhost:8080/api/v1/health`
 
-### 3. Frontend Application
+### 3. Run Frontend
 ```bash
 cd frontend
 npm install

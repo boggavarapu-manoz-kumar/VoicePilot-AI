@@ -12,21 +12,26 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:voicepilot}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:voicepilot}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
     username: ${DB_USER:voicepilot_user}
     password: ${DB_PASSWORD:voicepilot_pass}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 3000
+      maximum-pool-size: 10
+      minimum-idle: 2
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: validate # Hibernate validates against Flyway migrations
     open-in-view: false
     properties:
       hibernate:
         format_sql: false
   flyway:
-    enabled: false # Enabled once initial migrations are created and DB is active
+    enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
+    validate-on-migrate: true
 
 management:
   endpoints:
