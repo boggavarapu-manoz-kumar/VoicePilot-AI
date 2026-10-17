@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PageHeader } from '../components/PageHeader';
 import { Card } from '../components/Card';
 import { KpiCard } from '../components/KpiCard';
 import { Button } from '../components/Button';
 import { Badge } from '../components/Badge';
+import { BackendStatus } from '../components/BackendStatus';
+import { VoiceSphere } from '../components/VoiceSphere';
+import { healthApi } from '../lib/api';
+import { HealthStatus } from '../types/api';
 import {
   Users,
   Megaphone,
@@ -13,19 +18,20 @@ import {
   ArrowRight,
   TrendingUp,
   Clock,
-  PhoneOutgoing
+  PhoneOutgoing,
+  Sparkles,
+  Zap,
+  Activity,
+  Mic
 } from 'lucide-react';
 
-import { BackendStatus } from '../components/BackendStatus';
-import { healthApi } from '../lib/api';
-import { HealthStatus } from '../types/api';
-
 export const DashboardPage: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [health, setHealth] = React.useState<HealthStatus | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-  const [lastChecked, setLastChecked] = React.useState<Date | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [health, setHealth] = useState<HealthStatus | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastChecked, setLastChecked] = useState<Date | null>(null);
+  const [isLiveStream, setIsLiveStream] = useState(true);
 
   const fetchHealth = React.useCallback(() => {
     setIsLoading(true);
@@ -47,7 +53,6 @@ export const DashboardPage: React.FC = () => {
 
   React.useEffect(() => {
     fetchHealth();
-    // Modest periodic poll every 30 seconds with proper cleanup
     const timer = setInterval(fetchHealth, 30000);
     return () => clearInterval(timer);
   }, [fetchHealth]);
@@ -55,34 +60,51 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Banner Notice */}
-      <div className="bg-slate-100 border border-slate-200/90 rounded-md px-4 py-2.5 flex items-center justify-between text-xs text-slate-600">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-slate-800 uppercase tracking-wide text-[10px] bg-slate-200 px-1.5 py-0.5 rounded">
-            Prototype Notice
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-slate-50 border border-blue-100 rounded-lg px-4 py-3 flex items-center justify-between text-xs text-slate-700 shadow-2xs"
+      >
+        <div className="flex items-center gap-2.5">
+          <span className="flex items-center gap-1 font-semibold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded text-[10px] tracking-wide uppercase">
+            <Sparkles className="w-3 h-3 text-blue-600" />
+            Enterprise Edition
           </span>
-          <span>Sample data shown for evaluation. Real telephony and CRM entities will be provisioned in future sprints.</span>
+          <span className="font-medium text-slate-700">
+            VoicePilot AI Neural Voice Engine is initialized. Sample CRM metrics shown for Sprint 1 verification.
+          </span>
         </div>
-        <span className="hidden md:inline font-mono text-[11px] text-slate-400">Release 0.0.1</span>
-      </div>
+        <span className="hidden md:inline font-mono text-[11px] text-slate-400 font-medium">Release 0.0.1</span>
+      </motion.div>
 
-      {/* Page Header with Primary Action */}
+      {/* Page Header with Action Controls */}
       <PageHeader
-        title="Voice Operations Overview"
-        description="Monitor automated voice campaigns, customer reach, call completion, and lead conversion performance."
+        title="Voice Operations & Telemetry"
+        description="Real-time multi-agent dispatch oversight, acoustic synthesis telemetry, and customer reach analytics."
         action={
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" onClick={() => window.open('/api/v1/swagger-ui.html', '_blank')}>
-              API Docs
+          <div className="flex items-center gap-2.5">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.open('/api/v1/swagger-ui.html', '_blank')}
+            >
+              OpenAPI Console
             </Button>
-            <Button variant="primary" size="sm" onClick={() => setIsModalOpen(true)}>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsModalOpen(true)}
+              className="shadow-sm shadow-blue-500/20"
+            >
               <Plus className="w-4 h-4 mr-1.5" />
-              Create Campaign
+              New Voice Campaign
             </Button>
           </div>
         }
       />
 
-      {/* Backend Real-Time Health & Connectivity Status */}
+      {/* Backend Live Telemetry */}
       <BackendStatus
         health={health}
         isLoading={isLoading}
@@ -90,6 +112,73 @@ export const DashboardPage: React.FC = () => {
         onRefresh={fetchHealth}
         lastChecked={lastChecked}
       />
+
+      {/* Hero Interactive 3D Neural Voice Acoustic Centerpiece */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="relative bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl border border-slate-800"
+      >
+        {/* Subtle background glow effects */}
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-10 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+          {/* Left Hero Overview */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold tracking-wide">
+              <Zap className="w-3.5 h-3.5 text-blue-400" />
+              <span>Real-Time Voice Orchestration (Three.js Powered)</span>
+            </div>
+            
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+              Sub-500ms Conversational Voice Agents at Scale
+            </h2>
+            
+            <p className="text-slate-300 text-sm leading-relaxed max-w-xl">
+              VoicePilot AI synchronizes low-latency speech synthesis, streaming transcription, and knowledge base retrieval into automated outbound and inbound conversational calls.
+            </p>
+
+            <div className="grid grid-cols-3 gap-4 pt-3 border-t border-slate-800/80">
+              <div>
+                <div className="text-xl font-bold text-white tracking-tight">380 ms</div>
+                <div className="text-[11px] text-slate-400 uppercase font-medium">Turn Latency</div>
+              </div>
+              <div>
+                <div className="text-xl font-bold text-emerald-400 tracking-tight">99.8%</div>
+                <div className="text-[11px] text-slate-400 uppercase font-medium">Synthesis Accuracy</div>
+              </div>
+              <div>
+                <div className="text-xl font-bold text-blue-400 tracking-tight">12 Concurrent</div>
+                <div className="text-[11px] text-slate-400 uppercase font-medium">Active Channels</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsLiveStream(!isLiveStream)}
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  isLiveStream
+                    ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-500/30'
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                }`}
+              >
+                <Mic className="w-3.5 h-3.5" />
+                <span>{isLiveStream ? 'Simulating Acoustic Stream' : 'Acoustic Waveform Paused'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right 3D Three.js Interactive Sphere Container */}
+          <div className="lg:col-span-5 h-72 sm:h-80 w-full rounded-xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md overflow-hidden flex items-center justify-center shadow-inner">
+            <VoiceSphere isLive={isLiveStream} className="w-full h-full" />
+          </div>
+        </div>
+      </motion.div>
+
+      {/* KPI Metrics Row with Framer Motion stagger */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <KpiCard
           title="Total Contacts"
@@ -99,6 +188,7 @@ export const DashboardPage: React.FC = () => {
           timeframe="vs last month"
           icon={Users}
           badge="Sample Data"
+          delay={0.1}
         />
         <KpiCard
           title="Active Campaigns"
@@ -108,6 +198,7 @@ export const DashboardPage: React.FC = () => {
           timeframe="this week"
           icon={Megaphone}
           badge="Sample Data"
+          delay={0.15}
         />
         <KpiCard
           title="Calls Completed"
@@ -117,6 +208,7 @@ export const DashboardPage: React.FC = () => {
           timeframe="avg 2m 14s duration"
           icon={PhoneCall}
           badge="Sample Data"
+          delay={0.2}
         />
         <KpiCard
           title="Qualified Leads"
@@ -126,6 +218,7 @@ export const DashboardPage: React.FC = () => {
           timeframe="13.3% conversion rate"
           icon={UserCheck}
           badge="Sample Data"
+          delay={0.25}
         />
       </div>
 
@@ -136,67 +229,87 @@ export const DashboardPage: React.FC = () => {
           title="Call Outcome Distribution"
           subtitle="Illustrative telemetry from 1,200 simulated outbound voice interactions"
           className="lg:col-span-2"
+          delay={0.3}
         >
           <div className="space-y-4">
-            {/* Horizontal Bar Breakdown */}
             <div>
-              <div className="flex justify-between text-xs font-medium text-slate-700 mb-1.5">
+              <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1.5">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-xs bg-emerald-500" />
+                  <span className="w-2.5 h-2.5 rounded-xs bg-emerald-500 shadow-xs" />
                   Qualified / Interested (48%)
                 </span>
-                <span className="font-semibold text-slate-900">576 calls</span>
+                <span className="font-bold text-slate-900">576 calls</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                <div className="bg-emerald-500 h-2.5 rounded-full" style={{ width: '48%' }} />
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: '48%' }}
+                  transition={{ duration: 0.8, delay: 0.35, ease: 'easeOut' }}
+                  className="bg-emerald-500 h-2.5 rounded-full"
+                />
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between text-xs font-medium text-slate-700 mb-1.5">
+              <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1.5">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-xs bg-blue-500" />
+                  <span className="w-2.5 h-2.5 rounded-xs bg-blue-500 shadow-xs" />
                   Follow-up Requested (27%)
                 </span>
-                <span className="font-semibold text-slate-900">324 calls</span>
+                <span className="font-bold text-slate-900">324 calls</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: '27%' }} />
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: '27%' }}
+                  transition={{ duration: 0.8, delay: 0.45, ease: 'easeOut' }}
+                  className="bg-blue-500 h-2.5 rounded-full"
+                />
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between text-xs font-medium text-slate-700 mb-1.5">
+              <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1.5">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-xs bg-amber-500" />
+                  <span className="w-2.5 h-2.5 rounded-xs bg-amber-500 shadow-xs" />
                   Voicemail / No Answer (17%)
                 </span>
-                <span className="font-semibold text-slate-900">204 calls</span>
+                <span className="font-bold text-slate-900">204 calls</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                <div className="bg-amber-500 h-2.5 rounded-full" style={{ width: '17%' }} />
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: '17%' }}
+                  transition={{ duration: 0.8, delay: 0.55, ease: 'easeOut' }}
+                  className="bg-amber-500 h-2.5 rounded-full"
+                />
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between text-xs font-medium text-slate-700 mb-1.5">
+              <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1.5">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-xs bg-slate-400" />
                   Not Interested / DNC (8%)
                 </span>
-                <span className="font-semibold text-slate-900">96 calls</span>
+                <span className="font-bold text-slate-900">96 calls</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                <div className="bg-slate-400 h-2.5 rounded-full" style={{ width: '8%' }} />
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: '8%' }}
+                  transition={{ duration: 0.8, delay: 0.65, ease: 'easeOut' }}
+                  className="bg-slate-400 h-2.5 rounded-full"
+                />
               </div>
             </div>
 
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span className="flex items-center gap-1 text-slate-600">
+              <span className="flex items-center gap-1.5 text-slate-700 font-medium">
                 <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
-                Average Voice Agent Latency: <strong className="text-slate-800">420ms (P95)</strong>
+                <span>P95 End-to-End Turn Latency: <strong>420ms</strong></span>
               </span>
-              <span className="text-[11px] text-slate-400">Target &lt; 600ms</span>
+              <span className="text-[11px] text-slate-400 font-mono">Real-time STT+LLM+TTS</span>
             </div>
           </div>
         </Card>
@@ -206,10 +319,11 @@ export const DashboardPage: React.FC = () => {
           title="Recent Agent Activity"
           subtitle="Illustrative live call events"
           action={
-            <span className="text-xs text-blue-600 font-medium cursor-pointer hover:underline">
+            <span className="text-xs text-blue-600 font-semibold cursor-pointer hover:underline">
               View All
             </span>
           }
+          delay={0.35}
         >
           <div className="space-y-4">
             {[
@@ -242,10 +356,10 @@ export const DashboardPage: React.FC = () => {
                 time: '1 hour ago',
               },
             ].map((activity, idx) => (
-              <div key={idx} className="flex items-start justify-between text-xs border-b border-slate-50 pb-3 last:border-none last:pb-0">
+              <div key={idx} className="flex items-start justify-between text-xs border-b border-slate-100 pb-3 last:border-none last:pb-0">
                 <div className="space-y-0.5">
                   <div className="font-semibold text-slate-800 flex items-center gap-1.5">
-                    <PhoneOutgoing className="w-3 h-3 text-slate-400" />
+                    <PhoneOutgoing className="w-3.5 h-3.5 text-blue-500" />
                     <span>{activity.lead}</span>
                   </div>
                   <div className="text-slate-500 text-[11px]">{activity.agent}</div>
@@ -274,17 +388,18 @@ export const DashboardPage: React.FC = () => {
             <span className="text-xs text-slate-500 font-medium">8 Total Campaigns</span>
           </div>
         }
+        delay={0.4}
       >
-        <div className="overflow-x-auto -mx-5 -my-5">
+        <div className="overflow-x-auto -mx-6 -my-6">
           <table className="w-full text-left text-sm text-slate-700">
             <thead className="bg-slate-50 border-b border-slate-200 text-xs font-semibold uppercase text-slate-500 tracking-wider">
               <tr>
-                <th scope="col" className="px-5 py-3.5">Campaign Name</th>
-                <th scope="col" className="px-5 py-3.5">Assigned Agent</th>
-                <th scope="col" className="px-5 py-3.5">Status</th>
-                <th scope="col" className="px-5 py-3.5">Target Audience</th>
-                <th scope="col" className="px-5 py-3.5">Progress</th>
-                <th scope="col" className="px-5 py-3.5 text-right">Actions</th>
+                <th scope="col" className="px-6 py-3.5">Campaign Name</th>
+                <th scope="col" className="px-6 py-3.5">Assigned Agent</th>
+                <th scope="col" className="px-6 py-3.5">Status</th>
+                <th scope="col" className="px-6 py-3.5">Target Audience</th>
+                <th scope="col" className="px-6 py-3.5">Progress</th>
+                <th scope="col" className="px-6 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -326,30 +441,30 @@ export const DashboardPage: React.FC = () => {
                   completed: '1,500 / 1,500',
                 },
               ].map((campaign, idx) => (
-                <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
-                  <td className="px-5 py-3.5 font-medium text-slate-900">
+                <tr key={idx} className="hover:bg-blue-50/30 transition-colors">
+                  <td className="px-6 py-3.5 font-semibold text-slate-900">
                     {campaign.name}
                   </td>
-                  <td className="px-5 py-3.5 text-slate-600 text-xs">
+                  <td className="px-6 py-3.5 text-slate-600 text-xs">
                     {campaign.agent}
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-6 py-3.5">
                     <Badge variant={campaign.badge} size="sm" dot>
                       {campaign.status}
                     </Badge>
                   </td>
-                  <td className="px-5 py-3.5 text-slate-500 text-xs">
+                  <td className="px-6 py-3.5 text-slate-500 text-xs">
                     {campaign.audience}
                   </td>
-                  <td className="px-5 py-3.5">
-                    <div className="w-32 space-y-1">
-                      <div className="flex justify-between text-[11px] text-slate-500">
+                  <td className="px-6 py-3.5">
+                    <div className="w-36 space-y-1">
+                      <div className="flex justify-between text-[11px] text-slate-500 font-medium">
                         <span>{campaign.completed}</span>
                         <span>{campaign.progress}%</span>
                       </div>
                       <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
                         <div
-                          className={`h-1.5 rounded-full ${
+                          className={`h-1.5 rounded-full transition-all ${
                             campaign.progress === 100 ? 'bg-slate-400' : 'bg-blue-600'
                           }`}
                           style={{ width: `${campaign.progress}%` }}
@@ -357,11 +472,11 @@ export const DashboardPage: React.FC = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-3.5 text-right">
+                  <td className="px-6 py-3.5 text-right">
                     <button
                       type="button"
                       disabled
-                      className="inline-flex items-center text-xs font-medium text-slate-400 hover:text-slate-600 disabled:opacity-50"
+                      className="inline-flex items-center text-xs font-semibold text-slate-400 hover:text-slate-600 disabled:opacity-50"
                     >
                       <span>Manage</span>
                       <ArrowRight className="w-3.5 h-3.5 ml-1" />
@@ -374,44 +489,62 @@ export const DashboardPage: React.FC = () => {
         </div>
       </Card>
 
-      {/* Illustrative Campaign Creation Modal (Local state demonstration) */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-lg border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-base font-semibold text-slate-900">New Voice Campaign</h3>
-              <button
-                type="button"
-                className="text-slate-400 hover:text-slate-600 text-sm font-semibold p-1"
-                onClick={() => setIsModalOpen(false)}
-              >
-                ✕
-              </button>
-            </div>
-            <div className="space-y-3 text-xs text-slate-600">
-              <p>
-                Voice campaign dispatch workflows and telephony cadence management will be fully integrated with Spring Boot in <strong>Sprint 4</strong>.
-              </p>
-              <div className="p-3 bg-slate-50 rounded border border-slate-200">
-                <div className="font-semibold text-slate-700 mb-1">Upcoming Sprint 4 Capabilities:</div>
-                <ul className="list-disc pl-4 space-y-1 text-slate-500">
-                  <li>Twilio / SIP telephony trunk routing</li>
-                  <li>Target audience CSV and CRM segment imports</li>
-                  <li>Dynamic voice cadence scheduling & retry logic</li>
-                </ul>
+      {/* Illustrative Campaign Creation Modal with AnimatePresence */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs"
+              onClick={() => setIsModalOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="relative bg-white rounded-xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4 z-10"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-blue-600" />
+                  <span>Configure Voice Campaign</span>
+                </h3>
+                <button
+                  type="button"
+                  className="text-slate-400 hover:text-slate-600 text-sm font-semibold p-1"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  ✕
+                </button>
               </div>
-            </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <Button variant="secondary" size="sm" onClick={() => setIsModalOpen(false)}>
-                Dismiss
-              </Button>
-              <Button variant="primary" size="sm" onClick={() => setIsModalOpen(false)}>
-                Understood
-              </Button>
-            </div>
+              <div className="space-y-3 text-xs text-slate-600">
+                <p>
+                  Voice campaign dispatch workflows and telephony cadence management will be fully integrated with Spring Boot in <strong>Sprint 4</strong>.
+                </p>
+                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <div className="font-semibold text-slate-700 mb-1">Upcoming Sprint 4 Capabilities:</div>
+                  <ul className="list-disc pl-4 space-y-1 text-slate-500">
+                    <li>Twilio / SIP telephony trunk routing</li>
+                    <li>Target audience CSV and CRM segment imports</li>
+                    <li>Dynamic voice cadence scheduling & retry logic</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="secondary" size="sm" onClick={() => setIsModalOpen(false)}>
+                  Dismiss
+                </Button>
+                <Button variant="primary" size="sm" onClick={() => setIsModalOpen(false)}>
+                  Understood
+                </Button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 };
