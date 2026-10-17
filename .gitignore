@@ -30,6 +30,7 @@ ehthumbs_vista.db
 
 # Java / Maven Build Artifacts
 backend/target/
+backend/.maven/
 backend/.mvn/wrapper/maven-wrapper.jar
 !backend/.mvn/wrapper/maven-wrapper.properties
 backend/*.log

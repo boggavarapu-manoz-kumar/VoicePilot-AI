@@ -3,11 +3,14 @@ server:
   servlet:
     context-path: /api/v1
 
+voicepilot:
+  version: "0.0.1-SNAPSHOT"
+
 spring:
   application:
     name: voicepilot-backend
   profiles:
-    active: local
+    active: ${SPRING_PROFILES_ACTIVE:local}
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:voicepilot}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${DB_USER:voicepilot_user}
@@ -19,11 +22,20 @@ spring:
     open-in-view: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
   flyway:
-    enabled: true
+    enabled: false # Enabled once initial migrations are created and DB is active
     baseline-on-migrate: true
     locations: classpath:db/migration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
 
 springdoc:
   api-docs:

@@ -19,6 +19,7 @@
 
     <properties>
         <java.version>21</java.version>
+        <maven.compiler.release>21</maven.compiler.release>
         <springdoc.version>2.6.0</springdoc.version>
     </properties>
 
@@ -29,7 +30,13 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Validation -->
+        <!-- Spring Boot Actuator for Production Readiness / Observability -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Validation (Jakarta Validation / Hibernate Validator) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
@@ -58,7 +65,7 @@
             <artifactId>flyway-mysql</artifactId>
         </dependency>
 
-        <!-- OpenAPI Documentation -->
+        <!-- Springdoc OpenAPI (Swagger UI & OpenAPI 3 Specification) -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
