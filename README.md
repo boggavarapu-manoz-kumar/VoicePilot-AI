@@ -42,41 +42,57 @@ For detailed architectural specifications and directory responsibilities, see:
 
 ## Planned Local Setup
 
-### Prerequisites
-- Node.js (v20+ recommended, detected v22.17.1) and npm
-- Java 21 LTS
-- MySQL 8.x (native Windows service `MySQL80` or Docker Compose)
+## Local Development Startup & Verification
 
-### 1. Database Provisioning & Flyway Migrations
-See [Database Operations & Setup Guide](docs/development/DATABASE_SETUP.md) for full instructions.
+### Recommended Startup Sequence
 
-#### Option A: Native MySQL 8 (Recommended if MySQL service is running)
-Create the database and user using the MySQL client:
-```sql
-CREATE DATABASE IF NOT EXISTS voicepilot CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER IF NOT EXISTS 'voicepilot_user'@'localhost' IDENTIFIED BY 'voicepilot_pass';
-GRANT ALL PRIVILEGES ON voicepilot.* TO 'voicepilot_user'@'localhost';
-FLUSH PRIVILEGES;
-```
+#### 1. Database Provisioning
+- **Option A (Native MySQL 8 Service)**: If local Windows service `MySQL80` is running:
+  ```sql
+  CREATE DATABASE IF NOT EXISTS voicepilot CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  CREATE USER IF NOT EXISTS 'voicepilot_user'@'localhost' IDENTIFIED BY 'voicepilot_pass';
+  GRANT ALL PRIVILEGES ON voicepilot.* TO 'voicepilot_user'@'localhost';
+  FLUSH PRIVILEGES;
+  ```
+- **Option B (Docker Compose)**:
+  ```bash
+  docker compose -f infrastructure/database/docker-compose.yml up -d
+  ```
 
-#### Option B: Docker Compose
-```bash
-docker compose -f infrastructure/database/docker-compose.yml up -d
-```
-
-### 2. Run Backend
+#### 2. Start Backend Service
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
-Flyway automatically applies baseline migrations (`V1__init_system_baseline.sql`) and Hibernate validates the schema.
-- Interactive API docs: `http://localhost:8080/api/v1/swagger-ui.html`
-- Health telemetry: `http://localhost:8080/api/v1/health`
+*(Tip: For immediate zero-setup local frontend testing without MySQL user grants, run with the in-memory profile: `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev`)*
 
-### 3. Run Frontend
+- Health Telemetry Endpoint: `http://localhost:8080/api/v1/health`
+- OpenAPI Swagger Documentation: `http://localhost:8080/api/v1/swagger-ui.html`
+
+#### 3. Start Frontend Application
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-The frontend development server runs at `http://localhost:5173`.
+The application will open at `http://localhost:5173`. The dashboard real-time health indicator will show `Operational` (green dot) when the backend is active and provide graceful error banners when offline.
+
+---
+
+## Security & CORS Rules
+
+The Spring Boot backend enforces strict, narrow Cross-Origin Resource Sharing (CORS):
+- **Allowed Origins**: `http://localhost:5173` and `http://127.0.0.1:5173` (configurable via `${CORS_ALLOWED_ORIGINS}`).
+- Arbitrary origins (e.g., `http://unauthorized-domain.com`) receive an immediate `403 Forbidden` on preflight options requests.
+
+---
+
+## Troubleshooting
+
+1. **Backend Unreachable in Frontend Dashboard**:
+   - Check if Spring Boot is running on port 8080: `Test-NetConnection -ComputerName localhost -Port 8080`
+   - Verify `VITE_API_BASE_URL=http://localhost:8080/api/v1` in `frontend/.env`.
+2. **Access Denied for user 'voicepilot_user'@'localhost'**:
+   - Verify the MySQL database grants, or launch the backend using `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev`.
+3. **CORS Rejection**:
+   - Ensure the frontend runs on the standard Vite port `5173`. For custom dev ports, append the port to `CORS_ALLOWED_ORIGINS` in your environment.

@@ -5,6 +5,8 @@ server:
 
 voicepilot:
   version: "0.0.1-SNAPSHOT"
+  cors:
+    allowed-origins: "http://localhost:5173"
 
 spring:
   application:

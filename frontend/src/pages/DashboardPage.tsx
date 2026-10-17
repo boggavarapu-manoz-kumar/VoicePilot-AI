@@ -16,8 +16,41 @@ import {
   PhoneOutgoing
 } from 'lucide-react';
 
+import { BackendStatus } from '../components/BackendStatus';
+import { healthApi } from '../lib/api';
+import { HealthStatus } from '../types/api';
+
 export const DashboardPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [health, setHealth] = React.useState<HealthStatus | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [lastChecked, setLastChecked] = React.useState<Date | null>(null);
+
+  const fetchHealth = React.useCallback(() => {
+    setIsLoading(true);
+    healthApi.checkHealth()
+      .then((data) => {
+        setHealth(data);
+        setError(null);
+        setLastChecked(new Date());
+      })
+      .catch((err) => {
+        setHealth(null);
+        setError(err.message || 'Connection to backend failed');
+        setLastChecked(new Date());
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+
+  React.useEffect(() => {
+    fetchHealth();
+    // Modest periodic poll every 30 seconds with proper cleanup
+    const timer = setInterval(fetchHealth, 30000);
+    return () => clearInterval(timer);
+  }, [fetchHealth]);
 
   return (
     <div className="space-y-6">
@@ -49,7 +82,14 @@ export const DashboardPage: React.FC = () => {
         }
       />
 
-      {/* KPI Metrics Row */}
+      {/* Backend Real-Time Health & Connectivity Status */}
+      <BackendStatus
+        health={health}
+        isLoading={isLoading}
+        error={error}
+        onRefresh={fetchHealth}
+        lastChecked={lastChecked}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <KpiCard
           title="Total Contacts"
