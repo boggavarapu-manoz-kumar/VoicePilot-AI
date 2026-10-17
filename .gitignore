@@ -46,7 +46,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Database & Storage
+# Database & Local Infrastructure Storage
+infrastructure/database/data/
 data/
 *.sql.gz
 *.sqlite

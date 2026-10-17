@@ -1,42 +1,69 @@
 # VoicePilot AI
 
-VoicePilot AI is an enterprise-grade, AI-powered Voice CRM SaaS platform.
+VoicePilot AI is an enterprise-oriented, AI-powered Voice CRM SaaS platform. It combines core customer relationship management workflows with intelligent outbound and inbound voice call scheduling, speech-to-text, text-to-speech, and local/remote LLM inference.
 
-## Architecture & Technology Stack
+---
+
+## Technology Stack
 
 - **Frontend**: React 18, TypeScript, Vite
-- **Backend**: Java 21, Spring Boot 3 (Modular Monolith)
-- **Database**: MySQL 8 with Flyway schema migrations
-- **Infrastructure**: Docker Compose
+- **Backend**: Java 21 LTS, Spring Boot 3 (Modular Monolith)
+- **Database**: MySQL 8.x with Flyway schema migrations
+- **ORM**: Spring Data JPA & Hibernate
+- **API Style & Docs**: REST with JSON, Springdoc OpenAPI
+- **Local Infrastructure**: Docker Compose
 
-## Repository Layout
+---
 
-- `frontend/`: React + TypeScript frontend application.
-- `backend/`: Spring Boot modular monolith backend.
-- `docs/`: Technical specifications, architectural designs, and coding conventions.
-  - [Architecture Specification](docs/ARCHITECTURE.md)
-  - [Development Conventions](docs/CONVENTIONS.md)
-  - [Sprint Roadmap](docs/SPRINT_PLAN.md)
-- `docker-compose.yml`: Local infrastructure services (MySQL 8).
+## Repository Structure
 
-## Quick Start (Development)
-
-### 1. Start Local Database
-```bash
-docker compose up -d
+```
+voicepilot-ai/
+├── frontend/                  # React + TypeScript + Vite application
+├── backend/                   # Spring Boot 3 modular monolith backend
+├── infrastructure/            # Infrastructure definitions
+│   └── database/              # Docker Compose & MySQL 8 configuration
+├── docs/                      # Documentation suite
+│   ├── architecture/          # Architecture blueprints & structure guides
+│   └── development/           # Sprint planning & development guidelines
+├── scripts/                   # Developer automation and validation scripts
+├── .editorconfig              # Uniform code formatting & whitespace standards
+├── .env.example               # Reference environment variable template
+├── .gitignore                 # Version control exclusion rules
+└── README.md                  # Project overview and instructions
 ```
 
-### 2. Run Backend
+For detailed architectural specifications and directory responsibilities, see:
+- [System Architecture Specification](docs/architecture/ARCHITECTURE.md)
+- [Project Structure & Directory Roles](docs/architecture/PROJECT_STRUCTURE.md)
+- [Sprint 1 Execution Plan](docs/development/SPRINT_1.md)
+
+---
+
+## Planned Local Setup
+
+### Prerequisites
+- Node.js (v20+ recommended, detected v22.17.1) and npm
+- Java 21 LTS
+- Docker & Docker Compose (or standalone MySQL 8 server)
+
+### 1. Database (Local Container)
+When Docker is running on your machine:
+```bash
+docker compose -f infrastructure/database/docker-compose.yml up -d
+```
+
+### 2. Backend Service
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
-Swagger UI will be accessible at: `http://localhost:8080/swagger-ui.html`
+Once started, interactive API documentation is available at `http://localhost:8080/api/v1/swagger-ui.html`.
 
-### 3. Run Frontend
+### 3. Frontend Application
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-Frontend development server will start at: `http://localhost:5173`
+The frontend development server runs at `http://localhost:5173`.
