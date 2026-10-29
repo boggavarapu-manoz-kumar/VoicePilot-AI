@@ -77,6 +77,24 @@ npm run dev
 ```
 The application will open at `http://localhost:5173`. The dashboard real-time health indicator will show `Operational` (green dot) when the backend is active and provide graceful error banners when offline.
 
+
+---
+
+## Feature Roadmap & Sprint Status
+
+- [x] **Sprint 1: System Baseline & Foundation**
+  - Modular monolith architecture with Java 21 LTS & Spring Boot 3
+  - React 18, TypeScript, Vite frontend dashboard with modern dark aesthetic
+  - Strict CORS policy & real-time health telemetry endpoint (`/api/v1/health`)
+  - Database provisioning with MySQL 8.0 & Flyway baseline migration (`V1__init_system_baseline.sql`)
+  - Automated testing with Vitest & component regression suites
+- [ ] **Sprint 2: CRM Core Domain & Contact Management** (In Progress)
+  - Account and Contact entities (`crm_accounts`, `crm_contacts`)
+  - Flyway V2 migration, REST CRUD APIs with deterministic search & pagination
+  - Interactive Contact Directory UI with modal creation, editing, and delete safeguards
+- [ ] **Sprint 3: AI Voice Agents & Inbound/Outbound Scheduling**
+- [ ] **Sprint 4: Multi-Tenant Tenant Isolation & RBAC Security**
+
 ---
 
 ## Security & CORS Rules
