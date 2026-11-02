@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -133,6 +134,23 @@ public class AccountController {
     ) {
         AccountResponse updated = accountService.updateAccount(id, request);
         return ResponseEntity.ok(ApiResponse.ok(updated, "Account updated successfully"));
+    }
+
+    // -------------------------------------------------------------------------
+    // DELETE /accounts/{id}
+    // -------------------------------------------------------------------------
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete account", description = "Safely deletes a CRM account by ID. Associated contacts remain intact with their account reference set to NULL.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Account deleted successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Account not found")
+    })
+    public ResponseEntity<ApiResponse<Void>> deleteAccount(
+            @Parameter(description = "Account ID") @PathVariable Long id
+    ) {
+        accountService.deleteAccount(id);
+        return ResponseEntity.ok(ApiResponse.ok(null, "Account deleted successfully"));
     }
 
     // -------------------------------------------------------------------------

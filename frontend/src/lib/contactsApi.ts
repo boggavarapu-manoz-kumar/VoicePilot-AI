@@ -97,5 +97,43 @@ export const contactsApi = {
       signal,
     });
   },
+
+  /**
+   * Export contacts as a streamed CSV file matching active filters or explicit selection.
+   */
+  async exportContactsCsv(params?: ContactQueryParams & { ids?: number[] }, signal?: AbortSignal): Promise<Blob> {
+    const searchParams = new URLSearchParams();
+    if (params?.search && params.search.trim().length > 0) {
+      searchParams.set('search', params.search.trim());
+    }
+    if (params?.status) {
+      searchParams.set('status', params.status);
+    }
+    if (typeof params?.accountId === 'number') {
+      searchParams.set('accountId', params.accountId.toString());
+    }
+    if (typeof params?.withoutAccount === 'boolean') {
+      searchParams.set('withoutAccount', params.withoutAccount.toString());
+    }
+    if (params?.ids && params.ids.length > 0) {
+      params.ids.forEach(id => searchParams.append('ids', id.toString()));
+    }
+
+    const qs = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+    const response = await fetch(`${API_BASE_URL}/contacts/export${qs}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'text/csv',
+      },
+      signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Export failed with HTTP status ${response.status}`);
+    }
+
+    return response.blob();
+  },
 };
 

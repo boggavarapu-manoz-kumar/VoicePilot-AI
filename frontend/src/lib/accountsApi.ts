@@ -78,5 +78,15 @@ export const accountsApi = {
       signal,
     });
   },
+
+  /**
+   * Delete account by ID. Associated contacts have their account reference set to NULL.
+   */
+  deleteAccount(id: number, signal?: AbortSignal): Promise<void> {
+    return apiRequest<void>(`/accounts/${id}`, {
+      method: 'DELETE',
+      signal,
+    });
+  },
 };
 

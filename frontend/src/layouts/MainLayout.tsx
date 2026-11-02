@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
   Users,
+  Building2,
   Megaphone,
   Bot,
   PhoneCall,
@@ -15,7 +16,8 @@ import {
   X,
   Radio,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  SlidersHorizontal
 } from 'lucide-react';
 import { healthApi } from '../lib/api';
 import { HealthStatus } from '../types/api';
@@ -24,6 +26,8 @@ import { AmbientCanvas } from '../components/AmbientCanvas';
 const navigationItems = [
   { name: 'Overview', path: '/', icon: LayoutDashboard },
   { name: 'Contacts', path: '/contacts', icon: Users },
+  { name: 'Segments', path: '/segments', icon: SlidersHorizontal },
+  { name: 'Accounts', path: '/accounts', icon: Building2 },
   { name: 'Campaigns', path: '/campaigns', icon: Megaphone },
   { name: 'AI Agents', path: '/ai-agents', icon: Bot },
   { name: 'Call History', path: '/call-history', icon: PhoneCall },
@@ -221,7 +225,7 @@ export const MainLayout: React.FC = () => {
           <div className="flex items-center gap-3">
             <div className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold bg-slate-800/80 text-blue-300 px-2.5 py-1 rounded-full border border-slate-700/80">
               <Sparkles className="w-3 h-3 text-blue-400" />
-              <span>Sprint 1 Foundation</span>
+              <span>Sprint 3 Phase 1</span>
             </div>
 
             {/* Notification Bell */}

@@ -353,6 +353,16 @@ class CrmControllerIntegrationTest {
         mockMvc.perform(get("/accounts/{id}", 777777L))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error.code", is("NOT_FOUND")));
+
+        // 200 on delete account
+        mockMvc.perform(delete("/accounts/{id}", accId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.message", is("Account deleted successfully")));
+
+        // 404 on get deleted account
+        mockMvc.perform(get("/accounts/{id}", accId))
+                .andExpect(status().isNotFound());
     }
 
     @Test

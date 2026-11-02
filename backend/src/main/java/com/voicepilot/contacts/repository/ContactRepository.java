@@ -52,4 +52,8 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
     long countByAccountId(@Param("accountId") Long accountId);
 
     long countByAccount_Id(Long accountId);
+
+    @org.springframework.data.jpa.repository.Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Contact c SET c.account = null WHERE c.account.id = :accountId")
+    int nullifyAccountAssociation(@Param("accountId") Long accountId);
 }

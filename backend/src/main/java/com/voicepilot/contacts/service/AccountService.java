@@ -99,6 +99,20 @@ public class AccountService {
     }
 
     /**
+     * Safely deletes an Account entity by identifier.
+     * Associated contacts have their account_id reference set to NULL (ON DELETE SET NULL).
+     */
+    @Transactional
+    public void deleteAccount(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Account ID must not be null");
+        }
+        Account account = findAccountEntityById(id);
+        contactRepository.nullifyAccountAssociation(account.getId());
+        accountRepository.delete(account);
+    }
+
+    /**
      * Internal lookup helper for domain entity references.
      */
     public Account findAccountEntityById(Long id) {

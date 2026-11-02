@@ -163,6 +163,27 @@ class CrmServiceIntegrationTest {
     }
 
     @Test
+    @DisplayName("Verify deleting account nullifies contact association and preserves contacts")
+    void testDeleteAccountPreservesContacts() {
+        CreateAccountRequest accReq = new CreateAccountRequest("Omega Labs", "omega.io", "Biotech", "+1-555-0999", "https://omega.io", AccountStatus.ACTIVE);
+        AccountResponse acc = accountService.createAccount(accReq);
+
+        CreateContactRequest cReq = new CreateContactRequest("Gordon", "Freeman", "gordon@omega.io", "+1-555-1234", "Research Associate", ContactStatus.CUSTOMER, null, acc.id());
+        ContactResponse contact = contactService.createContact(cReq);
+        assertThat(contact.account()).isNotNull();
+        assertThat(contact.account().id()).isEqualTo(acc.id());
+
+        accountService.deleteAccount(acc.id());
+
+        assertThatThrownBy(() -> accountService.getAccountById(acc.id()))
+                .isInstanceOf(ResourceNotFoundException.class);
+
+        ContactResponse contactAfterDelete = contactService.getContactById(contact.id());
+        assertThat(contactAfterDelete).isNotNull();
+        assertThat(contactAfterDelete.account()).isNull();
+    }
+
+    @Test
     @DisplayName("Verify Contact update: modifying fields, re-assigning account, and disassociating account")
     void testUpdateContactLifecycle() {
         AccountResponse account1 = accountService.createAccount(new CreateAccountRequest("Corp One", "one.com", null, null, null, AccountStatus.ACTIVE));

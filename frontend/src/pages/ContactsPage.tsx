@@ -17,6 +17,8 @@ import {
 import {
   Users,
   Plus,
+  Upload,
+  Download,
   Search,
   RefreshCw,
   Building2,
@@ -30,6 +32,7 @@ import {
   ChevronRight,
   CheckCircle2,
 } from 'lucide-react';
+import { ContactImportModal } from '../components/ContactImportModal';
 
 const STATUS_VARIANTS: Record<ContactStatus, BadgeVariant> = {
   LEAD: 'primary',
@@ -63,6 +66,7 @@ export const ContactsPage: React.FC = () => {
 
   // Modals state
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
@@ -90,6 +94,7 @@ export const ContactsPage: React.FC = () => {
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formSubmitting, setFormSubmitting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [formGlobalError, setFormGlobalError] = useState<string | null>(null);
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -356,6 +361,33 @@ export const ContactsPage: React.FC = () => {
     }
   };
 
+  // Export CSV
+  const handleExportCsv = async () => {
+    setIsExporting(true);
+    try {
+      const blob = await contactsApi.exportContactsCsv({
+        search: debouncedSearch,
+        status: selectedStatus || undefined,
+        accountId: typeof selectedAccountId === 'number' ? selectedAccountId : undefined,
+        withoutAccount: selectedAccountId === 'none' ? true : undefined,
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contacts_export_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      setToastMessage('Contact export downloaded successfully.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to export contacts.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const hasActiveFilters =
     Boolean(searchTerm.trim()) || selectedStatus !== '' || selectedAccountId !== '';
 
@@ -399,6 +431,25 @@ export const ContactsPage: React.FC = () => {
             >
               <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsImportModalOpen(true)}
+              aria-label="Import contacts from CSV"
+            >
+              <Upload className="w-3.5 h-3.5 mr-1.5" />
+              Import CSV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={isExporting}
+              aria-label="Export contacts to CSV"
+            >
+              <Download className={`w-3.5 h-3.5 mr-1.5 ${isExporting ? 'animate-bounce' : ''}`} />
+              {isExporting ? 'Exporting...' : 'Export CSV'}
             </Button>
             <Button
               variant="primary"
@@ -1045,6 +1096,15 @@ export const ContactsPage: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Contact Import Modal */}
+      <ContactImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImportComplete={() => {
+          fetchContacts();
+          loadAccounts();
+        }}
+      />
     </div>
   );
 };

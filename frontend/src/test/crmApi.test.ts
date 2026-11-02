@@ -296,6 +296,19 @@ describe('CRM Typed API Client Integration Suite', () => {
       expect(JSON.parse(options.body)).toEqual(payload);
       expect(updated.name).toBe('Cyberdyne Global');
     });
+
+    it('deleteAccount sends DELETE to /accounts/:id and resolves void', async () => {
+      window.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true, data: null, message: 'Account deleted successfully' }),
+      });
+
+      await accountsApi.deleteAccount(8);
+      const [url, options] = (window.fetch as any).mock.calls[0];
+
+      expect(url).toMatch(/\/accounts\/8$/);
+      expect(options.method).toBe('DELETE');
+    });
   });
 
   describe('Error Handling and Edge Cases', () => {

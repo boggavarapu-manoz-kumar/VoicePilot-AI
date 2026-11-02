@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
 import { DashboardPage } from '../pages/DashboardPage';
 import { ContactsPage } from '../pages/ContactsPage';
+import { AccountsPage } from '../pages/AccountsPage';
+import { SegmentsPage } from '../pages/SegmentsPage';
 import { CampaignsPage } from '../pages/CampaignsPage';
 import { AIAgentsPage } from '../pages/AIAgentsPage';
 import { CallHistoryPage } from '../pages/CallHistoryPage';
@@ -17,6 +19,8 @@ export const AppRouter: React.FC = () => {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="contacts" element={<ContactsPage />} />
+          <Route path="segments" element={<SegmentsPage />} />
+          <Route path="accounts" element={<AccountsPage />} />
           <Route path="campaigns" element={<CampaignsPage />} />
           <Route path="ai-agents" element={<AIAgentsPage />} />
           <Route path="call-history" element={<CallHistoryPage />} />
