@@ -53,10 +53,10 @@ class DatabaseMigrationIntegrationTest {
     }
 
     @Test
-    @DisplayName("Verify Flyway migration history records V1, V2 and V3, and repeated validation passes")
+    @DisplayName("Verify Flyway migration history records V1 through V5, and repeated validation passes")
     void testFlywayMigrationHistoryAndValidation() {
         MigrationInfo[] applied = flyway.info().applied();
-        assertThat(applied).hasSize(3);
+        assertThat(applied).hasSize(5);
 
         // V1 verification
         assertThat(applied[0].getVersion().getVersion()).isEqualTo("1");
@@ -69,6 +69,14 @@ class DatabaseMigrationIntegrationTest {
         // V3 verification
         assertThat(applied[2].getVersion().getVersion()).isEqualTo("3");
         assertThat(applied[2].getDescription()).isEqualTo("crm segments");
+
+        // V4 verification
+        assertThat(applied[3].getVersion().getVersion()).isEqualTo("4");
+        assertThat(applied[3].getDescription()).isEqualTo("iam core");
+
+        // V5 verification
+        assertThat(applied[4].getVersion().getVersion()).isEqualTo("5");
+        assertThat(applied[4].getDescription()).isEqualTo("auth tokens");
 
         // A second migration validation must not report unexpected checksum or schema errors
         assertThatCode(() -> flyway.validate()).doesNotThrowAnyException();
